@@ -5,6 +5,9 @@ from langchain_community.vectorstores import FAISS
 from langchain.chains import RetrievalQA
 from langchain_google_genai import ChatGoogleGenerativeAI
 from dotenv import load_dotenv
+import streamlit as st
+
+st.title("⚖️ Legal Document Assistant – Answer legal questions from case law or contracts.")
 
 load_dotenv()
 
@@ -30,8 +33,18 @@ qa_chain = RetrievalQA.from_chain_type(
     retriever = db.as_retriever(),
     return_source_documents = True
 )
-query = "What is this documnet about?"
-response = qa_chain.invoke({"query": query})
-print(response["result"])
+# Streamlit user input
+query = st.text_input("Ask a question about the document: ")
+
+# check if Query is not empty
+if query:
+    response = qa_chain.invoke({"query": query})
+    st.write(response["result"])
+else: 
+    st.write("Please enter a question to get started")
+
+
+# response = qa_chain.invoke({"query": query})
+# print(response["result"])
 
 # print(chunks[0].page_content)       #this will print first chunk of text
