@@ -11,7 +11,7 @@ st.title("⚖️ Legal Document Assistant – Answer legal questions from case l
 
 load_dotenv()
 
-loader = PyMuPDFLoader("OS-Course Outline.pdf")
+loader = PyMuPDFLoader("growwcontractnote.pdf")
 docs = loader.load()
 
 text_splitter = RecursiveCharacterTextSplitter(
@@ -38,13 +38,11 @@ query = st.text_input("Ask a question about the document: ")
 
 # check if Query is not empty
 if query:
-    response = qa_chain.invoke({"query": query})
-    st.write(response["result"])
+    legal_prompt = f"You are a legal assistant. Answer the following legal question based only on the provided document. Be precise and avoid assumptions.\n\nQuestion: {query}"
+    response = qa_chain.invoke({"query": legal_prompt})
+    st.write("📌 **Answer:**", response["result"])
+    st.markdown("🔍 **Source Excerpts:**")
+    for doc in response["source_documents"]:
+        st.markdown(f"```{doc.page_content[:400]}...```")
 else: 
     st.write("Please enter a question to get started")
-
-
-# response = qa_chain.invoke({"query": query})
-# print(response["result"])
-
-# print(chunks[0].page_content)       #this will print first chunk of text
