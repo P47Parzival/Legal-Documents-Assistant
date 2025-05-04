@@ -7,6 +7,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from dotenv import load_dotenv
 import streamlit as st
 import os 
+import tempfile
 
 st.title("⚖️ Legal Document Assistant – Answer legal questions from case law or contracts.")
 
@@ -18,7 +19,10 @@ if not api_key:
 # uploading custom pdf file
 uploaded_file = st.file_uploader("Upload a PDF file", type=["pdf"])
 if uploaded_file:
-    loader = PyMuPDFLoader(uploaded_file)
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
+        tmp_file.write(uploaded_file.read())
+        tmp_file_path = tmp_file.name
+    loader = PyMuPDFLoader(tmp_file_path)
     docs = loader.load()
     text_splitter = RecursiveCharacterTextSplitter(
     chunk_size = 500,
@@ -52,8 +56,3 @@ if uploaded_file:
         st.write("Please enter a question to get started")
 else:
     st.warning("Please upload a PDF file to get started.")
-
-
-
-# if uploaded_file:
-    
